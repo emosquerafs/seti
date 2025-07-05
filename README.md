@@ -245,6 +245,7 @@ graph TB
 
 | Componente | Puerto | Propósito | Configuración |
 |------------|--------|-----------|---------------|
+| **postgres** | 5432 | Base de datos de Keycloak | DB: `keycloak`, User: `keycloak` |
 | **postgres-franchise** | 5433 | Base de datos de la aplicación | DB: `franchise-db`, User: `franchise` |
 
 ```yaml
@@ -254,6 +255,108 @@ healthcheck:
   interval: 5s
   timeout: 5s
   retries: 5
+```
+
+##### 📊 Estructura de la Base de Datos
+
+```mermaid
+erDiagram
+    FRANCHISE {
+        UUID id PK
+        VARCHAR name
+        TIMESTAMP created_at
+        TIMESTAMP updated_at
+    }
+    
+    BRANCH {
+        UUID id PK
+        VARCHAR name
+        UUID franchise_id FK
+        TIMESTAMP created_at
+        TIMESTAMP updated_at
+    }
+    
+    PRODUCT {
+        UUID id PK
+        VARCHAR name
+        INTEGER stock
+        UUID branch_id FK
+        TIMESTAMP created_at
+        TIMESTAMP updated_at
+    }
+    
+    FRANCHISE ||--o{ BRANCH : "tiene"
+    BRANCH ||--o{ PRODUCT : "contiene"
+```
+
+##### 🗄️ Schema SQL Completo
+
+```sql
+-- Activar extensión para UUID
+CREATE EXTENSION IF NOT EXISTS "pgcrypto";
+
+-- Tabla de franquicias
+CREATE TABLE IF NOT EXISTS franchise (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    name VARCHAR(255) NOT NULL,
+    created_at TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Tabla de sucursales
+CREATE TABLE IF NOT EXISTS branch (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    name VARCHAR(255) NOT NULL,
+    franchise_id UUID NOT NULL,
+    created_at TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT fk_branch_franchise FOREIGN KEY (franchise_id) REFERENCES franchise(id) ON DELETE CASCADE
+);
+
+-- Tabla de productos
+CREATE TABLE IF NOT EXISTS product (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    name VARCHAR(255) NOT NULL,
+    stock INTEGER NOT NULL CHECK (stock >= 0),
+    branch_id UUID NOT NULL,
+    created_at TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT fk_product_branch FOREIGN KEY (branch_id) REFERENCES branch(id) ON DELETE CASCADE
+);
+
+-- Índices para optimizar consultas
+CREATE INDEX IF NOT EXISTS idx_branch_franchise_id ON branch(franchise_id);
+CREATE INDEX IF NOT EXISTS idx_product_branch_id ON product(branch_id);
+CREATE INDEX IF NOT EXISTS idx_product_stock ON product(stock);
+CREATE INDEX IF NOT EXISTS idx_franchise_name ON franchise(name);
+CREATE INDEX IF NOT EXISTS idx_branch_name ON branch(name);
+CREATE INDEX IF NOT EXISTS idx_product_name ON product(name);
+```
+
+##### 🔗 Relaciones y Restricciones
+
+| Relación | Tipo | Descripción | Restricción |
+|----------|------|-------------|-------------|
+| **Franchise → Branch** | 1:N | Una franquicia puede tener múltiples sucursales | `ON DELETE CASCADE` |
+| **Branch → Product** | 1:N | Una sucursal puede tener múltiples productos | `ON DELETE CASCADE` |
+| **Product.stock** | Check | El stock no puede ser negativo | `CHECK (stock >= 0)` |
+| **UUID Fields** | Primary Key | Todas las entidades usan UUID como identificador | `DEFAULT gen_random_uuid()` |
+
+##### 📈 Optimizaciones de Performance
+
+```sql
+-- Consulta optimizada para productos con mayor stock por sucursal
+EXPLAIN ANALYZE 
+SELECT DISTINCT ON (b.id) 
+    p.id, p.name, p.stock, p.branch_id, b.name as branch_name
+FROM product p
+JOIN branch b ON p.branch_id = b.id
+WHERE b.franchise_id = $1
+ORDER BY b.id, p.stock DESC;
+
+-- Índice compuesto para mejorar la consulta anterior
+CREATE INDEX IF NOT EXISTS idx_product_branch_stock 
+ON product(branch_id, stock DESC);
 ```
 
 #### 🔒 HashiCorp Vault
@@ -637,11 +740,7 @@ POST http://localhost:8081/api/franchises
 Content-Type: application/json
 
 {
-  "name": "Pizza Express",
-  "description": "Cadena de pizzerías rápidas",
-  "centralLocation": "Bogotá, Colombia",
-  "contactEmail": "admin@pizzaexpress.com",
-  "contactPhone": "+57 1 234-5678"
+  "name": "Pizza Express"
 }
 ```
 
@@ -663,42 +762,52 @@ PUT http://localhost:8081/api/franchises/{franchiseId}
 Content-Type: application/json
 
 {
-  "name": "Pizza Express Premium",
-  "description": "Cadena premium de pizzerías artesanales"
+  "name": "Pizza Express Premium"
 }
+```
+
+```http
+### Eliminar franquicia
+DELETE http://localhost:8081/api/franchises/{franchiseId}
 ```
 
 #### 🏪 Gestión de Sucursales
 
 ```http
 ### Agregar sucursal a una franquicia
-POST http://localhost:8081/api/franchises/{franchiseId}/branches
+POST http://localhost:8081/api/branches/franchises/{franchiseId}/branches
 Content-Type: application/json
 
 {
-  "name": "Pizza Express Centro",
-  "address": "Carrera 7 #32-16, Bogotá",
-  "phone": "+57 1 345-6789",
-  "managerName": "María González",
-  "openingDate": "2024-01-15"
+  "name": "Pizza Express Centro"
 }
 ```
 
 ```http
 ### Obtener sucursales de una franquicia
-GET http://localhost:8081/api/franchises/{franchiseId}/branches
+GET http://localhost:8081/api/branches/franchises/{franchiseId}/branches
+Accept: application/json
+```
+
+```http
+### Obtener sucursal por ID
+GET http://localhost:8081/api/branches/branches/{branchId}
 Accept: application/json
 ```
 
 ```http
 ### Actualizar información de sucursal
-PUT http://localhost:8081/api/branches/{branchId}
+PUT http://localhost:8081/api/branches/branches/{branchId}
 Content-Type: application/json
 
 {
-  "name": "Pizza Express Centro Premium",
-  "managerName": "Carlos Rodríguez"
+  "name": "Pizza Express Centro Premium"
 }
+```
+
+```http
+### Eliminar sucursal
+DELETE http://localhost:8081/api/branches/branches/{branchId}
 ```
 
 #### 📦 Gestión de Productos
@@ -710,11 +819,7 @@ Content-Type: application/json
 
 {
   "name": "Pizza Margherita",
-  "description": "Pizza clásica con tomate, mozzarella y albahaca",
-  "price": 25000,
-  "stock": 50,
-  "category": "PIZZAS",
-  "sku": "PIZZA-MARG-001"
+  "stock": 50
 }
 ```
 
@@ -725,22 +830,34 @@ Accept: application/json
 ```
 
 ```http
-### Actualizar stock de producto
-PUT http://localhost:8081/api/products/{productId}/stock
+### Obtener producto por ID
+GET http://localhost:8081/api/products/{productId}
+Accept: application/json
+```
+
+```http
+### Actualizar producto
+PUT http://localhost:8081/api/products/{productId}
 Content-Type: application/json
 
 {
-  "stock": 75,
-  "reason": "Reposición de inventario"
+  "name": "Pizza Margherita Premium",
+  "stock": 75
 }
 ```
 
 ```http
-### Eliminar producto de sucursal
+### Eliminar producto
 DELETE http://localhost:8081/api/products/{productId}
 ```
 
 #### 📊 Consultas y Reportes
+
+```http
+### Producto con mayor stock en una sucursal
+GET http://localhost:8081/api/branches/{branchId}/products/max-stock
+Accept: application/json
+```
 
 ```http
 ### Productos con mayor stock por sucursal de una franquicia
@@ -748,16 +865,47 @@ GET http://localhost:8081/api/franchises/{franchiseId}/branches/products/max-sto
 Accept: application/json
 ```
 
-```http
-### Productos con menor stock (críticos)
-GET http://localhost:8081/api/franchises/{franchiseId}/products/low-stock?threshold=10
-Accept: application/json
-```
+#### 📋 Resumen de Endpoints por Controlador
 
-```http
-### Reporte de inventario por franquicia
-GET http://localhost:8081/api/franchises/{franchiseId}/inventory-report
-Accept: application/json
+| Controlador | Endpoint Base | Métodos Disponibles | Descripción |
+|-------------|---------------|-------------------|-------------|
+| **FranchiseController** | `/api/franchises` | GET, POST, PUT, DELETE | CRUD completo de franquicias |
+| **BranchController** | `/api/branches` | GET, POST, PUT, DELETE | CRUD completo de sucursales |
+| **ProductController** | `/api` | GET, POST, PUT, DELETE | CRUD de productos + consultas especializadas |
+
+#### 🔍 Endpoints Específicos por Funcionalidad
+
+```mermaid
+graph TD
+    subgraph "🏢 Franchise Endpoints"
+        F1[GET /api/franchises]
+        F2[POST /api/franchises]
+        F3[GET /api/franchises/{id}]
+        F4[PUT /api/franchises/{id}]
+        F5[DELETE /api/franchises/{id}]
+    end
+    
+    subgraph "🏪 Branch Endpoints"
+        B1[POST /api/branches/franchises/{franchiseId}/branches]
+        B2[GET /api/branches/franchises/{franchiseId}/branches]
+        B3[GET /api/branches/branches/{branchId}]
+        B4[PUT /api/branches/branches/{branchId}]
+        B5[DELETE /api/branches/branches/{branchId}]
+    end
+    
+    subgraph "📦 Product Endpoints"
+        P1[POST /api/branches/{branchId}/products]
+        P2[GET /api/branches/{branchId}/products]
+        P3[GET /api/products/{productId}]
+        P4[PUT /api/products/{productId}]
+        P5[DELETE /api/products/{productId}]
+        P6[GET /api/branches/{branchId}/products/max-stock]
+        P7[GET /api/franchises/{franchiseId}/branches/products/max-stock]
+    end
+    
+    F1 --> B2
+    B2 --> P2
+    F3 --> P7
 ```
 
 ### 🧪 Casos de Prueba Prácticos
@@ -916,30 +1064,62 @@ echo "🏢 Creando franquicia de prueba..."
 FRANCHISE_ID=$(curl -s -X POST "$BASE_URL/franchises" \
   -H "Content-Type: application/json" \
   -d '{
-    "name": "Pizza Express",
-    "description": "Cadena de pizzerías",
-    "centralLocation": "Bogotá, Colombia"
-  }' | jq -r '.data.id')
+    "name": "Pizza Express"
+  }' | jq -r '.id')
 
 echo "🏪 Creando sucursales..."
-BRANCH1_ID=$(curl -s -X POST "$BASE_URL/franchises/$FRANCHISE_ID/branches" \
+BRANCH1_ID=$(curl -s -X POST "$BASE_URL/branches/franchises/$FRANCHISE_ID/branches" \
   -H "Content-Type: application/json" \
   -d '{
-    "name": "Pizza Express Centro",
-    "address": "Carrera 7 #32-16",
-    "phone": "+57 1 345-6789"
-  }' | jq -r '.data.id')
+    "name": "Pizza Express Centro"
+  }' | jq -r '.id')
 
-echo "📦 Agregando productos..."
+BRANCH2_ID=$(curl -s -X POST "$BASE_URL/branches/franchises/$FRANCHISE_ID/branches" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "Pizza Express Norte"
+  }' | jq -r '.id')
+
+echo "📦 Agregando productos a la primera sucursal..."
 curl -s -X POST "$BASE_URL/branches/$BRANCH1_ID/products" \
   -H "Content-Type: application/json" \
   -d '{
     "name": "Pizza Margherita",
-    "price": 25000,
     "stock": 50
   }'
 
+curl -s -X POST "$BASE_URL/branches/$BRANCH1_ID/products" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "Pizza Pepperoni",
+    "stock": 30
+  }'
+
+echo "📦 Agregando productos a la segunda sucursal..."
+curl -s -X POST "$BASE_URL/branches/$BRANCH2_ID/products" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "Pizza Hawaiana",
+    "stock": 75
+  }'
+
+curl -s -X POST "$BASE_URL/branches/$BRANCH2_ID/products" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "Pizza Vegetariana",
+    "stock": 40
+  }'
+
 echo "✅ Datos de prueba creados exitosamente!"
+echo "📋 Resumen:"
+echo "  - Franquicia ID: $FRANCHISE_ID"
+echo "  - Sucursal Centro ID: $BRANCH1_ID"
+echo "  - Sucursal Norte ID: $BRANCH2_ID"
+echo ""
+echo "🧪 Prueba los endpoints:"
+echo "  - Ver franquicia: curl $BASE_URL/franchises/$FRANCHISE_ID"
+echo "  - Ver sucursales: curl $BASE_URL/branches/franchises/$FRANCHISE_ID/branches"
+echo "  - Ver productos con mayor stock: curl $BASE_URL/franchises/$FRANCHISE_ID/branches/products/max-stock"
 ```
 
 ## 🧪 Testing y Calidad de Código
