@@ -197,10 +197,7 @@ graph TB
         API_CLIENT[🔧 API Client]
     end
     
-    subgraph "🔄 Load Balancer (Futuro)"
-        LB[⚖️ Load Balancer]
-    end
-    
+        
     subgraph "🚀 Application Layer"
         subgraph "🐳 Docker Network: seti-network"
             BACKEND[🏗️ Franchise Service<br/>:8081]            
@@ -215,7 +212,6 @@ graph TB
     
     subgraph "🗄️ Data Layer"
         subgraph "🐳 Docker Network: seti-network"
-            PG_KC[(🐘 PostgreSQL<br/>Keycloak DB<br/>:5432)]
             PG_APP[(🐘 PostgreSQL<br/>Franchise DB<br/>:5433)]
             VAULT_DATA[(💾 Vault Data<br/>Volume)]
         end
