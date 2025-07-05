@@ -14,7 +14,7 @@ export class CategoriesService {
   private async init() {
     await this.storage.create();
     const stored = await this.storage.get(this.storageKey);
-    this.categories = stored || [];
+    this.categories = stored || []; 
   }
 
   getAll(): Category[] {

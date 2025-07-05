@@ -1,20 +1,55 @@
-<ion-header [translucent]="true">
+<ion-header>
   <ion-toolbar>
-    <ion-title>
-      Blank
-    </ion-title>
+    <ion-title>To-Do List</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="openCategoryCrud()">
+        <ion-icon name="pricetags-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">Blank</ion-title>
-    </ion-toolbar>
-  </ion-header>
+<ion-content *ngIf="!loading; else loadingTpl">
+  <ion-card>
+    <ion-item>
+      <ion-label>Categoría</ion-label>
+      <ion-select [(ngModel)]="selectedCategoryId" (ionChange)="reloadData()">
+        <ion-select-option [value]="null">Todas</ion-select-option>
+        <ion-select-option *ngFor="let c of categories" [value]="c.id">{{ c.name }}</ion-select-option>
+      </ion-select>
+    </ion-item>
+  </ion-card>
 
-  <div id="container">
-    <strong>Ready to create an app?</strong>
-    <p>Start with Ionic <a target="_blank" rel="noopener noreferrer" href="https://ionicframework.com/docs/components">UI Components</a></p>
-  </div>
+  <ion-list>
+    <ion-item *ngFor="let task of filteredTasks()">
+      <ion-checkbox slot="start" [checked]="task.completed" (ionChange)="toggleComplete(task)"></ion-checkbox>
+      <ion-label>
+        <h2 [class.completed]="task.completed">{{ task.title }}</h2>
+        <p *ngIf="task.categoryId">
+          <ion-chip color="primary" *ngIf="getCategoryName(task.categoryId)">
+            {{ getCategoryName(task.categoryId) }}
+          </ion-chip>
+
+        </p>
+      </ion-label>
+      <ion-button fill="clear" color="danger" slot="end" (click)="removeTask(task.id)">
+        <ion-icon name="trash"></ion-icon>
+      </ion-button>
+    </ion-item>
+  </ion-list>
+
+  <ion-item>
+    <ion-input placeholder="Nueva tarea" [(ngModel)]="newTaskTitle"></ion-input>
+    <ion-button (click)="addTask()" [disabled]="!newTaskTitle.trim()">Agregar</ion-button>
+  </ion-item>
+
+  <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+    <ion-fab-button (click)="addTask()">
+      <ion-icon name="add"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
 </ion-content>
+
+<ng-template #loadingTpl>
+  <ion-spinner></ion-spinner>
+</ng-template>

@@ -1,11 +1,12 @@
 import { Injectable } from '@angular/core';
 import { Storage } from '@ionic/storage-angular';
-import { Task } from '../models/task.model';
+import { TodoTask } from '../models/todo-task.model';
+
 
 @Injectable({ providedIn: 'root' })
 export class TasksService {
   private storageKey = 'tasks';
-  private tasks: Task[] = [];
+  private tasks: TodoTask[] = [];
 
   constructor(private storage: Storage) {
     this.init();
@@ -17,16 +18,16 @@ export class TasksService {
     this.tasks = stored || [];
   }
 
-  getAll(): Task[] {
+  getAll(): TodoTask[] {
     return [...this.tasks];
   }
 
-  async add(task: Task) {
+  async add(task: TodoTask) {
     this.tasks.push(task);
     await this.storage.set(this.storageKey, this.tasks);
   }
 
-  async update(task: Task) {
+  async update(task: TodoTask) {
     const index = this.tasks.findIndex(t => t.id === task.id);
     if (index !== -1) {
       this.tasks[index] = task;

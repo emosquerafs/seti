@@ -1,4 +1,4 @@
-export interface Task {
+export interface TodoTask {
   id: string;
   title: string;
   completed: boolean;
