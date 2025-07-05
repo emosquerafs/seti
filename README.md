@@ -235,8 +235,7 @@ graph TB
     VAULT_INIT -.-> VAULT    
     
     style BACKEND fill:#e1f5fe    
-    style VAULT fill:#f3e5f5
-    style PG_KC fill:#e8f5e8
+    style VAULT fill:#f3e5f5    
     style PG_APP fill:#e8f5e8
 ```
 
