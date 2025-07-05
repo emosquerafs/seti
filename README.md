@@ -563,56 +563,11 @@ EOF
 }
 ```
 
-### 🐳 Docker Compose - Configuración Detallada
-
-#### Diagrama de Dependencias
-
-```mermaid
-graph TB
-    subgraph "🔧 Initialization Phase"
-        VI[🔒 vault-init]
-        KI[🔑 keycloak-init]
-    end
-    
-    subgraph "🗄️ Database Layer"
-        PG1[🐘 postgres<br/>:5432]
-        PG2[🐘 postgres-franchise<br/>:5433]
-    end
-    
-    subgraph "🔐 Security Layer"
-        V[🔒 vault<br/>:8200]
-        KC[🔑 keycloak<br/>:8080]
-    end
-    
-    subgraph "🚀 Application Layer"
-        BE[🏗️ backend<br/>:8081]
-        FE[🎨 frontend<br/>:4200]
-    end
-    
-    PG1 --> KC
-    PG2 --> BE
-    V --> BE
-    KC --> BE
-    VI --> V
-    KI --> KC
-    
-    classDef db fill:#e8f5e8
-    classDef security fill:#fff3e0
-    classDef app fill:#e1f5fe
-    classDef init fill:#f3e5f5
-    
-    class PG1,PG2 db
-    class V,KC security
-    class BE,FE app
-    class VI,KI init
-```
-
 #### Health Checks Configurados
 
 | Servicio | Health Check | Intervalo | Timeout | Reintentos |
 |----------|--------------|-----------|---------|------------|
 | **PostgreSQL** | `pg_isready` | 5s | 5s | 5 |
-| **Keycloak** | HTTP `/health` | 10s | 5s | 5 |
 | **Vault** | `vault status` | 10s | 5s | 5 |
 | **Backend** | `/actuator/health` | 15s | 10s | 3 |
 
@@ -1276,114 +1231,6 @@ management:
         include: health,metrics
 ```
 
-### 📊 Monitoreo y Observabilidad
-
-```mermaid
-graph LR
-    subgraph "📊 Metrics Collection"
-        APP[🚀 Application]
-        ACTUATOR[💊 Spring Actuator]
-        MICROMETER[📏 Micrometer]
-    end
-    
-    subgraph "📈 Monitoring Stack"
-        PROMETHEUS[🔥 Prometheus]
-        GRAFANA[📊 Grafana]
-        ALERTMANAGER[🚨 AlertManager]
-    end
-    
-    subgraph "📝 Logging"
-        LOGBACK[📝 Logback]
-        ELK[📚 ELK Stack]
-        KIBANA[🔍 Kibana]
-    end
-    
-    APP --> ACTUATOR
-    ACTUATOR --> MICROMETER
-    MICROMETER --> PROMETHEUS
-    PROMETHEUS --> GRAFANA
-    PROMETHEUS --> ALERTMANAGER
-    
-    APP --> LOGBACK
-    LOGBACK --> ELK
-    ELK --> KIBANA
-```
-
-## 🛠️ Desarrollo y Contribución
-
-### 📋 Guía de Contribución
-
-#### 🔄 Git Workflow
-
-```mermaid
-gitgraph
-    commit id: "Initial"
-    branch develop
-    checkout develop
-    commit id: "Feature base"
-    
-    branch feature/franchise-crud
-    checkout feature/franchise-crud
-    commit id: "Add franchise entity"
-    commit id: "Add franchise repository"
-    commit id: "Add franchise use cases"
-    commit id: "Add franchise controller"
-    
-    checkout develop
-    merge feature/franchise-crud
-    commit id: "Merge franchise feature"
-    
-    checkout main
-    merge develop
-    commit id: "Release v1.0.0"
-```
-
-#### 📝 Convenciones de Código
-
-```java
-// ✅ Buenas prácticas implementadas
-@Component
-@Slf4j
-public class FranchiseService {
-    
-    private final FranchiseRepository repository;
-    
-    public FranchiseService(FranchiseRepository repository) {
-        this.repository = repository;
-    }
-    
-    @Transactional(readOnly = true)
-    public Flux<Franchise> findAll() {
-        log.debug("Finding all franchises");
-        return repository.findAll()
-                .doOnNext(franchise -> log.debug("Found franchise: {}", franchise.getName()))
-                .doOnError(error -> log.error("Error finding franchises", error));
-    }
-}
-```
-
-#### 🧪 Definición de Done
-
-- [ ] ✅ Código implementado siguiendo Clean Architecture
-- [ ] 🧪 Pruebas unitarias con cobertura > 80%
-- [ ] 🔗 Pruebas de integración implementadas
-- [ ] 📝 Documentación actualizada
-- [ ] 🔍 Code review aprobado
-- [ ] 🚀 CI/CD pipeline exitoso
-- [ ] 📊 Métricas de performance verificadas
-
-### 🔧 Herramientas de Desarrollo
-
-| Herramienta | Propósito | Configuración |
-|-------------|-----------|---------------|
-| **🧹 SpotBugs** | Análisis estático | `./gradlew spotbugsMain` |
-| **📏 Checkstyle** | Estilo de código | `./gradlew checkstyleMain` |
-| **🔒 OWASP** | Seguridad | `./gradlew dependencyCheckAnalyze` |
-| **📊 JaCoCo** | Cobertura | `./gradlew jacocoTestReport` |
-| **⚡ JMeter** | Testing de carga | Scripts en `/performance` |
-
-
-
 ## �📚 Referencias y Recursos
 
 ### 📖 Documentación Técnica
@@ -1394,59 +1241,15 @@ public class FranchiseService {
 | **🔄 Spring WebFlux** | Documentación oficial | [🔗 Link](https://docs.spring.io/spring-framework/docs/current/reference/html/web-reactive.html) |
 | **⚡ R2DBC** | Reactive Database Connectivity | [🔗 Link](https://r2dbc.io/) |
 | **🔒 HashiCorp Vault** | Secrets Management | [🔗 Link](https://www.vaultproject.io/docs) |
-| **🔑 Keycloak** | Identity and Access Management | [🔗 Link](https://www.keycloak.org/documentation) |
 | **🐳 Docker Compose** | Multi-container orchestration | [🔗 Link](https://docs.docker.com/compose/) |
 
-### 🎓 Recursos de Aprendizaje
 
-```mermaid
-mindmap
-  root((📚 Learning Resources))
-    🏛️ Architecture
-      Clean Architecture Book
-      Hexagonal Architecture Guide
-      DDD Best Practices
-      Microservices Patterns
-    
-    🔄 Reactive Programming
-      Reactor Core Guide
-      WebFlux Tutorial
-      R2DBC Documentation
-      Reactive Streams Spec
-    
-    🔐 Security
-      OAuth 2.0 / OIDC
-      Vault Best Practices
-      Spring Security Guide
-      JWT Handbook
-    
-    🐳 DevOps
-      Docker Mastery
-      Kubernetes Fundamentals
-      CI/CD Pipelines
-      Monitoring & Observability
-```
-
-### 🤝 Comunidad y Soporte
-
-- 💬 **Slack**: #seti-franchise-service
-- 📧 **Email**: seti-support@company.com
-- 🐛 **Issues**: GitHub Issues
-- 📊 **Confluence**: Documentación interna
-- 📹 **YouTube**: Tutoriales y demos
-
-### 🏆 Reconocimientos
-
-- 🥇 **Best Architecture Award 2024**
-- ⭐ **4.8/5 Developer Experience Rating**
-- 🚀 **Featured in Spring Boot Showcase**
-- 📈 **99.9% Uptime Achievement**
 
 ---
 
 ## 📝 Changelog
 
-### Version 1.0.0 (2024-01-15)
+### Version 1.0.0 (2025-07-05)
 - ✨ **Initial Release**
 - 🏢 Gestión completa de franquicias
 - 🏪 Administración de sucursales
@@ -1454,31 +1257,4 @@ mindmap
 - 🔐 Integración con Keycloak
 - 🔒 Gestión de secretos con Vault
 - 📚 Documentación Swagger completa
-
-### Version 0.9.0 (2024-01-01)
-- 🧪 **Beta Release**
-- 🏗️ Arquitectura hexagonal implementada
-- ⚡ Stack reactivo completo
-- 🐳 Containerización con Docker
-- 🧪 Suite de testing completa
-
----
-
-<div align="center">
-
-### 🙋‍♂️ ¿Necesitas ayuda?
-
-Si tienes preguntas, sugerencias o encuentras algún problema, no dudes en:
-
-[![📧 Email](https://img.shields.io/badge/Email-seti--support%40company.com-blue?style=for-the-badge&logo=gmail)](mailto:seti-support@company.com)
-[![💬 Slack](https://img.shields.io/badge/Slack-%23seti--franchise--service-4A154B?style=for-the-badge&logo=slack)](https://company.slack.com/channels/seti-franchise-service)
-[![🐛 Issues](https://img.shields.io/badge/GitHub-Issues-181717?style=for-the-badge&logo=github)](https://github.com/company/seti-franchise-service/issues)
-
----
-
-**Desarrollado con ❤️ por el equipo SETI**
-
-*"Construyendo el futuro de la gestión de franquicias"*
-
-</div>
 
