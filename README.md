@@ -316,7 +316,7 @@ graph TB
         end
     end
     
-    FS -.->|"http://vault:8200"| VT    
+    FS -.->|"http://vault:8200"| VI    
     FS -.->|"jdbc:postgresql://postgres-franchise:5433"| PG2
     
     VI -.->|Configures| VT    
