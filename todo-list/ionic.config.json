@@ -1,5 +1,7 @@
 {
-  "name": "ionic-app-base",
-  "integrations": {},
+  "name": "todo-list",
+  "integrations": {
+    "capacitor": {}
+  },
   "type": "angular-standalone"
 }
