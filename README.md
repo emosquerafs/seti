@@ -245,7 +245,6 @@ graph TB
 
 | Componente | Puerto | Propósito | Configuración |
 |------------|--------|-----------|---------------|
-| **postgres** | 5432 | Base de datos de Keycloak | DB: `keycloak`, User: `keycloak` |
 | **postgres-franchise** | 5433 | Base de datos de la aplicación | DB: `franchise-db`, User: `franchise` |
 
 ```yaml
@@ -293,39 +292,7 @@ graph LR
 - 🔐 Claves de cifrado
 - 📧 Configuraciones de email/SMS
 
-#### 🔑 Keycloak Authentication
 
-```mermaid
-graph TB
-    subgraph "🔑 Keycloak Flow"
-        LOGIN[📱 User Login]
-        AUTH[🔐 Authentication]
-        TOKEN[🎫 JWT Token]
-        REFRESH[🔄 Token Refresh]
-    end
-    
-    subgraph "🏗️ Application Security"
-        GUARD[🛡️ Auth Guard]
-        INTERCEP[🔍 Token Interceptor]
-        VALID[✅ Token Validation]
-    end
-    
-    subgraph "🗄️ User Management"
-        REALM[🏰 Realm: seti-realm]
-        CLIENT[🔧 Client: franchise-client]
-        ROLES[👥 Roles & Permissions]
-    end
-    
-    LOGIN --> AUTH
-    AUTH --> TOKEN
-    TOKEN --> GUARD
-    GUARD --> INTERCEP
-    INTERCEP --> VALID
-    
-    AUTH --> REALM
-    REALM --> CLIENT
-    CLIENT --> ROLES
-```
 
 ### 🌐 Red Docker y Comunicación
 
@@ -334,32 +301,25 @@ graph TB
     subgraph "🐳 Docker Network: seti-network"
         subgraph "🚀 Application Services"
             FS[franchise-service:8081]
-            FE[web-franchise:4200]
         end
         
-        subgraph "🔐 Security Services"
-            KC[keycloak:8080]
+        subgraph "🔐 Security Services"            
             VT[vault:8200]
         end
         
-        subgraph "🗄️ Database Services"
-            PG1[postgres:5432]
+        subgraph "🗄️ Database Services"            
             PG2[postgres-franchise:5433]
         end
         
         subgraph "⚙️ Init Services"
-            VI[vault-init]
-            KI[keycloak-init]
+            VI[vault-init]            
         end
     end
     
-    FS -.->|"http://vault:8200"| VT
-    FS -.->|"http://keycloak:8080"| KC
-    FS -.->|"jdbc:postgresql://postgres-franchise:5432"| PG2
-    KC -.->|"jdbc:postgresql://postgres:5432"| PG1
+    FS -.->|"http://vault:8200"| VT    
+    FS -.->|"jdbc:postgresql://postgres-franchise:5433"| PG2
     
-    VI -.->|Configures| VT
-    KI -.->|Configures| KC
+    VI -.->|Configures| VT    
 ```
 
 **Ventajas de la Red Docker:**
