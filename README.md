@@ -620,14 +620,70 @@ open http://localhost:8081/api/swagger-ui.html
 
 #### Variables de Entorno
 
+```bash
+# Crear archivo .env en la raíz del proyecto (solo para desarrollo local)
+cat << EOF > .env
+# Vault - Token de acceso para obtener todos los secretos
+VAULT_TOKEN=root
+EOF
+```
+
+#### 🔐 Autenticación con Keycloak
+
+El sistema utiliza Keycloak para la autenticación y autorización. Para probar los endpoints protegidos del backend, necesitas obtener un token JWT.
+
+##### 🎫 Obtener Token de Acceso
+
+```bash
+# Obtener token de autenticación desde Keycloak
+curl --location 'http://localhost:8080/realms/SETI/protocol/openid-connect/token' \
+  --header 'Content-Type: application/x-www-form-urlencoded' \
+  --data-urlencode 'client_id=SETI' \
+  --data-urlencode 'username=app-user' \
+  --data-urlencode 'password=123456' \
+  --data-urlencode 'grant_type=password'
+```
+
+##### 📋 Respuesta del Token
+
+```json
+{
+  "access_token": "eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJfX...",
+  "expires_in": 300,
+  "refresh_expires_in": 1800,
+  "refresh_token": "eyJhbGciOiJIUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJfX...",
+  "token_type": "Bearer",
+  "not-before-policy": 0,
+  "session_state": "8d0d7c42-8f3e-4b52-9a1f-2e7d4c5b8a9c",
+  "scope": "email profile"
+}
+```
+
+##### 🔑 Usar el Token en las Peticiones
+
+Desde la documentacion swagger utilice el token para autorizar la peticion.
+
+
+![alt text](<Screenshot 2025-07-05 at 3.29.11 PM.png>)
+
+##### 🔒 Configuración de Keycloak
+
+| Parámetro | Valor | Descripción |
+|-----------|-------|-------------|
+| **Realm** | `SETI` | Nombre del realm en Keycloak |
+| **Client ID** | `SETI` | Identificador del cliente |
+| **Username** | `app-user` | Usuario de prueba |
+| **Password** | `123456` | Contraseña de prueba |
+| **Grant Type** | `password` | Flujo de autenticación directa |
+
 #### Configuración de IDE
 
 ##### IntelliJ IDEA
-```xml
-<!-- Configuración VM Options -->
--Dspring.profiles.active=local
--Dvault.token=root
--Dlogging.level.com.seti=DEBUG
+```bash
+# Variables de entorno para desarrollo en IntelliJ IDEA
+# Configurar en Run/Debug Configurations > Environment Variables
+VAULT_TOKEN=root
+SPRING_PROFILES_ACTIVE=local
 ```
 
 ##### VS Code
@@ -639,7 +695,11 @@ open http://localhost:8081/api/swagger-ui.html
       "path": "/path/to/java17"
     }
   ],
-  "spring-boot.ls.java.home": "/path/to/java17"
+  "spring-boot.ls.java.home": "/path/to/java17",
+  "spring-boot.run.environment": {
+    "VAULT_TOKEN": "root",
+    "SPRING_PROFILES_ACTIVE": "local"
+  }
 }
 ```
 
