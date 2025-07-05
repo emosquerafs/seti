@@ -6,7 +6,7 @@ spring:
       token: ${VAULT_TOKEN}
       authentication: TOKEN
       scheme: http
-      host: vault
+      host: localhost
       port: 8200
       config:
         lifecycle:
