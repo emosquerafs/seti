@@ -203,14 +203,12 @@ graph TB
     
     subgraph "🚀 Application Layer"
         subgraph "🐳 Docker Network: seti-network"
-            BACKEND[🏗️ Franchise Service<br/>:8081]
-            FRONTEND[🎨 Angular Frontend<br/>:4200]
+            BACKEND[🏗️ Franchise Service<br/>:8081]            
         end
     end
     
     subgraph "🔐 Security Layer"
-        subgraph "🐳 Docker Network: seti-network"
-            KEYCLOAK[🔑 Keycloak<br/>:8080]
+        subgraph "🐳 Docker Network: seti-network"            
             VAULT[🔒 HashiCorp Vault<br/>:8200]
         end
     end
@@ -225,7 +223,6 @@ graph TB
     
     subgraph "🔧 Initialization Services"
         VAULT_INIT[⚙️ Vault Init]
-        KC_INIT[⚙️ Keycloak Init]
     end
     
     WEB --> BACKEND
@@ -236,7 +233,7 @@ graph TB
     BACKEND --> VAULT
     BACKEND --> PG_APP
     
-    KEYCLOAK --> PG_KC
+    
     VAULT --> VAULT_DATA
     
     VAULT_INIT -.-> VAULT    
