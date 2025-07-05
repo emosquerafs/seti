@@ -1,0 +1,37 @@
+:host ::ng-deep .p-dialog .product-image {
+    width: 150px;
+    margin: 0 auto 2rem auto;
+    display: block;
+}
+
+:host ::ng-deep .p-datatable .p-datatable-thead > tr > th {
+    position: -webkit-sticky;
+    position: sticky;
+    top: 0;
+    z-index: 1;
+}
+
+.table-header {
+    display: flex;
+    justify-content: space-between;
+}
+
+.p-toolbar {
+    border: 0 !important;
+    border-radius: 0;
+    background-color: transparent !important;
+}
+
+.formgrid {
+    .field {
+        margin-bottom: 1rem;
+    }
+}
+
+.p-dropdown {
+    width: 100%;
+}
+
+.p-inputnumber {
+    width: 100%;
+}

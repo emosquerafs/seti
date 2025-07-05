@@ -1,0 +1,23 @@
+spring:
+  config:
+    import: vault://kv/applications/local/${spring.application.name}
+  cloud:
+    vault:
+      token: ${VAULT_TOKEN}
+      authentication: TOKEN
+      scheme: http
+      host: localhost
+      port: 8200
+      config:
+        lifecycle:
+          enabled: true
+server:
+  port: 8081
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+  api-docs:
+    path: /v3/api-docs
+
+

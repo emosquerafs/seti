@@ -1,0 +1,14 @@
+$primaryLightColor: #c96f79;
+$primaryColor: #a54357;
+$primaryDarkColor: #8d304c;
+$primaryDarkerColor: #762143;
+$primaryTextColor: #f8fafc;
+
+$highlightBg: #f3e5f5 !default;
+$highlightTextColor: #495057 !default;
+$highlightFocusBg: rgba($primaryColor, 0.24) !default;
+
+@import '../_variables';
+@import '../../theme-base/_components';
+@import '../_extensions';
+@import '../../extensions/_fullcalendar';

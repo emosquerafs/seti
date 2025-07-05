@@ -1,0 +1,107 @@
+{
+  "business": {
+    "organization": {
+      "patients": {
+        "list": {
+          "type": "Tipo de documento",
+          "ssn": "Número de documento",
+          "patientName": "Nombre paciente",
+          "gender": "Sexo",
+          "email": "Email",
+          "emptymessage": "No hay pacientes para mostrar",
+          "loadingbody": "Cargando pacientes. Porfavor espere Loading cities data. Please wait."
+        },
+        "detail": {
+          "title": "Detalles del paciente",
+          "confirm": "Confirme la acción",
+          "documentType": "Tipo de documento",
+          "ssn": "Número de documento",
+          "gender": "Sexo",
+          "firstName": "Primer Nombre",
+          "fullName": "Nombre paciente",
+          "middleName": "Segundo Nombre",
+          "otherNames": "Otros nombres",
+          "lastName": "Primer Apellido",
+          "secondLastName": "Segundo apellido",
+          "birthDate": "Fecha de nacimeinto",
+          "eps": "EPS",
+          "regiment": "Regimen",
+          "level": "Level",
+          "country": "País",
+          "state": "Estado",
+          "city": "Ciudad",
+          "address": "Dirección",
+          "phoneNumber": "Numero de telefono",
+          "email": "Email",
+          "errors": {
+            "documentType": "Seleccione un tipo de documento válido",
+            "ssn": {
+              "required": "El número de documento es requerido",
+              "length": "La longitud máxima es de 15",
+              "pattern": "Solo caracteres numericos estan permitidos"
+            },
+            "digit": {
+              "length": "La longitud máxima es de 1",
+              "pattern": "Solo caracteres numericos estan permitidos"
+            },
+            "gender": "El sexo es requerido",
+            "firstName": {
+              "required": "El primer nombre es requerido",
+              "length": "La longitud máxima es de 50",
+              "pattern": "Solo caracteres alfabeticos y espacios estan permitidos"
+            },
+            "middleName": {
+              "length": "La longitud máxima es de 50",
+              "pattern": "Solo caracteres alfabeticos y espacios estan permitidos"
+            },
+            "otherNames": {
+              "required": "La sigla es requerida",
+              "length": "La longitud máxima es de 20",
+              "pattern": "Solo caracteres alfabeticos y espacios estan permitidos"
+            },
+            "lastName": {
+              "required": "El primer apellido es requerido",
+              "length": "La longitud máxima es de 50",
+              "pattern": "Solo caracteres alfabeticos y espacios estan permitidos"
+            },
+            "secondLastName": {
+              "length": "La longitud máxima es de 50",
+              "pattern": "Solo caracteres alfabeticos y espacios estan permitidos"
+            },
+            "eps": {
+              "required": "La eps es requerida"
+            },
+            "country": {
+              "required": "El país se requerido"
+            },
+            "state": {
+              "required": "El padepartamentoís se requerido"
+            },
+            "city": {
+              "required": "La ciudad es requerida"
+            },
+            "regiment": {
+              "required": "El regiment es requerido"
+            },
+            "level": {
+              "required": "El nivel es requerido"
+            },
+            "address": {
+              "required": "La direccion es requerida",
+              "length": "La longitud máxima es de 50"
+            },
+            "phoneNumber": {
+              "required": "El numero de telefono es requerido",
+              "length": "La longitud máxima es de 50",
+              "pattern": "Solo numeros estan permitidos"
+            },
+            "email": {
+              "length": "La longitud máxima es de 100",
+              "pattern": "Formato de email invalido"
+            }
+          }
+        }
+      }
+    }
+  }
+}

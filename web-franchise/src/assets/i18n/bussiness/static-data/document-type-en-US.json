@@ -1,0 +1,24 @@
+{
+  "static-data": {
+    "document-type": {
+      "table": {
+        "id": "Item",
+        "shortname": "Initials",
+        "name": "Document Type",
+        "emptymessage": "There are no document types to display",
+        "loadingbody": "Loading document types. Please wait."
+      },
+      "detail": {
+        "title": "Document Type Details",
+        "confirm": "Confirm the action",
+        "errors": {
+          "shortname": "Please provide valid initials",
+          "name": "Please provide a valid document type"
+        },
+        "delete": {
+          "msg": "Are you sure you want to delete "
+        }
+      }
+    }
+  }
+}

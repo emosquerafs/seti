@@ -1,0 +1,147 @@
+<div class="grid">
+  <div class="col-12">
+    <div class="card">
+      <h5>Gestión de Tipos de Documento</h5>
+      <p-toolbar styleClass="mb-4">
+        <ng-template pTemplate="left">
+          <div class="my-2">
+            <button 
+              pButton 
+              pRipple 
+              label="Nuevo" 
+              icon="pi pi-plus" 
+              class="p-button-success mr-2" 
+              (click)="openNew()">
+            </button>
+          </div>
+        </ng-template>
+      </p-toolbar>
+
+      <p-table 
+        #dt 
+        [value]="documentTypes" 
+        [columns]="[
+          {field: 'id', header: 'ID'},
+          {field: 'code', header: 'Código'},
+          {field: 'description', header: 'Descripción'}
+        ]"
+        responsiveLayout="scroll"
+        [rows]="10"
+        [globalFilterFields]="['code','description']"
+        [paginator]="true"
+        [rowsPerPageOptions]="[10,20,30]"
+        [showCurrentPageReport]="true"
+        currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} registros"
+        [rowHover]="true"
+        dataKey="id"
+        [loading]="loading">
+        
+        <ng-template pTemplate="caption">
+          <div class="flex flex-column md:flex-row md:justify-content-between md:align-items-center">
+            <h5 class="m-0">Administrar Tipos de Documento</h5>
+            <span class="block mt-2 md:mt-0 p-input-icon-left">
+              <i class="pi pi-search"></i>
+              <input 
+                pInputText 
+                type="text" 
+                (input)="dt.filterGlobal($any($event.target).value, 'contains')" 
+                placeholder="Buscar..." />
+            </span>
+          </div>
+        </ng-template>
+
+        <ng-template pTemplate="header">
+          <tr>
+            <th pSortableColumn="id">ID <p-sortIcon field="id"></p-sortIcon></th>
+            <th pSortableColumn="code">Código <p-sortIcon field="code"></p-sortIcon></th>
+            <th pSortableColumn="description">Descripción <p-sortIcon field="description"></p-sortIcon></th>
+            <th>Acciones</th>
+          </tr>
+        </ng-template>
+
+        <ng-template pTemplate="body" let-documentType>
+          <tr>
+            <td>{{documentType.id}}</td>
+            <td>{{documentType.code}}</td>
+            <td>{{documentType.description}}</td>
+            <td>
+              <div class="flex">
+                <button 
+                  pButton 
+                  pRipple 
+                  icon="pi pi-pencil" 
+                  class="p-button-rounded p-button-success mr-2" 
+                  (click)="editDocumentType(documentType)">
+                </button>
+                <button 
+                  pButton 
+                  pRipple 
+                  icon="pi pi-trash" 
+                  class="p-button-rounded p-button-warning" 
+                  (click)="deleteDocumentType(documentType)">
+                </button>
+              </div>
+            </td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </div>
+  </div>
+</div>
+
+<p-dialog 
+  [(visible)]="displayDialog" 
+  [style]="{width: '450px'}" 
+  header="{{isEdit ? 'Editar' : 'Nuevo'}} Tipo de Documento" 
+  [modal]="true" 
+  class="p-fluid">
+  
+  <ng-template pTemplate="content">
+    <div class="field">
+      <label for="code">Código</label>
+      <input 
+        type="text" 
+        pInputText 
+        id="code" 
+        [(ngModel)]="documentType.code" 
+        required 
+        autofocus 
+        [class.ng-invalid]="!documentType.code" />
+      <small class="ng-dirty ng-invalid" *ngIf="!documentType.code">El código es requerido.</small>
+    </div>
+    
+    <div class="field">
+      <label for="description">Descripción</label>
+      <input 
+        type="text" 
+        pInputText 
+        id="description" 
+        [(ngModel)]="documentType.description" 
+        required 
+        [class.ng-invalid]="!documentType.description" />
+      <small class="ng-dirty ng-invalid" *ngIf="!documentType.description">La descripción es requerida.</small>
+    </div>
+  </ng-template>
+
+  <ng-template pTemplate="footer">
+    <button 
+      pButton 
+      pRipple 
+      label="Cancelar" 
+      icon="pi pi-times" 
+      class="p-button-text" 
+      (click)="hideDialog()">
+    </button>
+    <button 
+      pButton 
+      pRipple 
+      label="Guardar" 
+      icon="pi pi-check" 
+      class="p-button-text" 
+      (click)="saveDocumentType()"
+      [disabled]="!documentType.code || !documentType.description">
+    </button>
+  </ng-template>
+</p-dialog>
+
+<p-confirmDialog [style]="{width: '425px'}"></p-confirmDialog>

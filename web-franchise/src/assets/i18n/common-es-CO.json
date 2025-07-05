@@ -1,0 +1,20 @@
+{
+  "buttons": {
+    "Yes": "Sí",
+    "No": "No",
+    "Save": "Guardar",
+    "Cancel": "Cancelar",
+    "Delete": "Eliminar",
+    "New": "Agregar",
+    "Filter": "Filtrar",
+    "Back": "Volver",
+    "Import": "Importar",
+    "Refresh": "Actualizar"
+  },
+  "general": {
+    "messages": {
+      "missingInformation": "Información incompleta",
+      "checkForm": "Por favor revise el formulario"
+    }
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "menulogin": {
+    "language": "Language",
+    "settings": "Settings",
+    "termOfUse": "Terms of Use",
+    "support": "Support",
+    "logOut": "Log Out"
+  },
+  "menu": {
+    "management": {
+      "title": "Management",
+      "documentTypes": "Document Types",
+      "persons": "Persons",
+      "employees": "Employees",
+      "procedures": "Procedures"
+    }
+  }
+}

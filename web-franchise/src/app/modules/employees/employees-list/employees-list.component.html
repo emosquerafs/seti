@@ -1,0 +1,165 @@
+<div class="grid">
+  <div class="col-12">
+    <div class="card">
+      <h5>Gestión de Empleados</h5>
+      <p-toolbar styleClass="mb-4">
+        <ng-template pTemplate="left">
+          <div class="my-2">
+            <button 
+              pButton 
+              pRipple 
+              label="Nuevo Empleado" 
+              icon="pi pi-plus" 
+              class="p-button-success mr-2" 
+              (click)="openNew()">
+            </button>
+          </div>
+        </ng-template>
+      </p-toolbar>
+
+      <p-table 
+        #dt 
+        [value]="employees" 
+        responsiveLayout="scroll"
+        [rows]="10"
+        [globalFilterFields]="['department','person.firstName','person.lastName']"
+        [paginator]="true"
+        [rowsPerPageOptions]="[10,20,30]"
+        [showCurrentPageReport]="true"
+        currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} registros"
+        [rowHover]="true"
+        dataKey="id"
+        [loading]="loading">
+        
+        <ng-template pTemplate="caption">
+          <div class="flex flex-column md:flex-row md:justify-content-between md:align-items-center">
+            <h5 class="m-0">Administrar Empleados</h5>
+            <span class="block mt-2 md:mt-0 p-input-icon-left">
+              <i class="pi pi-search"></i>
+              <input 
+                pInputText 
+                type="text" 
+                (input)="dt.filterGlobal($any($event.target).value, 'contains')" 
+                placeholder="Buscar..." />
+            </span>
+          </div>
+        </ng-template>
+
+        <ng-template pTemplate="header">
+          <tr>
+            <th pSortableColumn="id">ID <p-sortIcon field="id"></p-sortIcon></th>
+            <th>Empleado</th>
+            <th pSortableColumn="department">Departamento <p-sortIcon field="department"></p-sortIcon></th>
+            <th pSortableColumn="hireDate">Fecha Contratación <p-sortIcon field="hireDate"></p-sortIcon></th>
+            <th>Acciones</th>
+          </tr>
+        </ng-template>
+
+        <ng-template pTemplate="body" let-employee>
+          <tr>
+            <td>{{employee.id}}</td>
+            <td>
+              <span *ngIf="employee.person">
+                {{employee.person.firstName}} {{employee.person.lastName}}
+              </span>
+              <span *ngIf="!employee.person">
+                {{getPersonFullName(employee.personId)}}
+              </span>
+            </td>
+            <td>{{employee.department}}</td>
+            <td>{{employee.hireDate | date:'dd/MM/yyyy'}}</td>
+            <td>
+              <div class="flex">
+                <button 
+                  pButton 
+                  pRipple 
+                  icon="pi pi-pencil" 
+                  class="p-button-rounded p-button-success mr-2" 
+                  (click)="editEmployee(employee)">
+                </button>
+                <button 
+                  pButton 
+                  pRipple 
+                  icon="pi pi-trash" 
+                  class="p-button-rounded p-button-warning" 
+                  (click)="deleteEmployee(employee)">
+                </button>
+              </div>
+            </td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </div>
+  </div>
+</div>
+
+<p-dialog 
+  [(visible)]="displayDialog" 
+  [style]="{width: '500px'}" 
+  header="{{isEdit ? 'Editar' : 'Nuevo'}} Empleado" 
+  [modal]="true" 
+  class="p-fluid">
+  
+  <ng-template pTemplate="content">
+    <div class="field">
+      <label for="person">Persona</label>
+      <p-dropdown 
+        id="person"
+        [options]="persons" 
+        [(ngModel)]="employee.personId"
+        optionLabel="firstName"
+        optionValue="id"
+        placeholder="Seleccione una persona">
+        <ng-template let-person pTemplate="item">
+          {{person.firstName}} {{person.lastName}} - {{person.idNumber}}
+        </ng-template>
+        <ng-template let-person pTemplate="selectedItem">
+          {{person.firstName}} {{person.lastName}}
+        </ng-template>
+      </p-dropdown>
+    </div>
+    
+    <div class="field">
+      <label for="department">Departamento</label>
+      <input 
+        type="text" 
+        pInputText 
+        id="department" 
+        [(ngModel)]="employee.department" 
+        required />
+    </div>
+    
+    <div class="field">
+      <label for="hireDate">Fecha de Contratación</label>
+      <p-calendar 
+        id="hireDate"
+        [(ngModel)]="employee.hireDate"
+        dateFormat="yy-mm-dd"
+        [showIcon]="true"
+        inputId="icon">
+      </p-calendar>
+    </div>
+  </ng-template>
+
+  <ng-template pTemplate="footer">
+    <button 
+      pButton 
+      pRipple 
+      label="Cancelar" 
+      icon="pi pi-times" 
+      class="p-button-text" 
+      (click)="hideDialog()">
+    </button>
+    <button 
+      pButton 
+      pRipple 
+      label="Guardar" 
+      icon="pi pi-check" 
+      class="p-button-text" 
+      (click)="saveEmployee()"
+      [disabled]="!validateEmployee()">
+    </button>
+  </ng-template>
+</p-dialog>
+
+<p-confirmDialog [style]="{width: '425px'}"></p-confirmDialog>

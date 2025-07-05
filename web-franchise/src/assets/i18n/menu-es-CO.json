@@ -1,0 +1,18 @@
+{
+  "menulogin": {
+    "language": "Idioma",
+    "settings": "Configuración",
+    "termOfUse": "Terminos de uso",
+    "support": "Soporte",
+    "logOut": "Cerrar sesión"
+  },
+  "menu": {
+    "management": {
+      "title": "Gestión",
+      "documentTypes": "Tipos de Documento",
+      "persons": "Personas",
+      "employees": "Empleados",
+      "procedures": "Procedimientos"
+    }
+  }
+}

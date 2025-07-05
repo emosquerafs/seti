@@ -1,0 +1,22 @@
+{
+  "static-data": {
+    "level": {
+      "table": {
+        "id": "Item",
+        "shortname": "Iniciales",
+        "name": "Nombre Nivel",
+        "emptymessage": "No hay nivels para mostrar",
+        "loadingbody": "Cargando los niveles. Porfavor espere Loading cities data. Please wait."
+      },
+      "detail": {
+        "errors": {
+          "shortname": "Por favor proporione unas inciiales válidas",
+          "name": "Por favor proporcione un nombre de ciudad válido"
+        },
+        "delete": {
+          "msg": "Esta seguro que quiere elimianar "
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "static-data": {
+    "country": {
+      "list": {
+        "countrytable": {
+          "id": "Item",
+          "iso": "ISO Code",
+          "name": "Country Name",
+          "shortname": "Initials"
+        }
+      },
+      "details": {
+        "error": {
+          "shortname": "Please select a valid name",
+          "name": "Please select a valid name"
+        }
+      },
+      "delete": {
+        "msg": "Are you sure you want to delete"
+      }
+    }
+  }
+}

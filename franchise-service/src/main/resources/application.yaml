@@ -1,0 +1,13 @@
+spring:
+  application:
+    name: franchise-service
+  output:
+    ansi:
+      enabled: always
+  profiles:
+    active: local
+  config:
+    location: ./src/main/resources
+
+project:
+  version: 0.0.1}

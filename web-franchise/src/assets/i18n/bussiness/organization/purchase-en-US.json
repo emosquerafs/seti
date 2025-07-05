@@ -1,0 +1,141 @@
+{
+  "business": {
+    "organization": {
+      "purchase": {
+        "lines": {
+          "title": "Purchase Items",
+          "purchaseLineDetails": "Purchase Item Details",
+          "id": "No",
+          "recordNumber": "Record No",
+          "sequence": "Sequence",
+          "product": "Product",
+          "quantity": "Quantity",
+          "unitPrice": "Unit Price",
+          "discount": "Discount",
+          "description": "Description",
+          "vat": "VAT",
+          "total": "Total Value",
+          "purchaseLineAmount": "Amount",
+          "taxScheme": "Tax",
+          "taxCategory": "Tax %",
+          "taxableAmount": "Taxable Amount",
+          "taxAmount": "Tax Amount",
+          "emptymessage": "No purchase lines to display",
+          "loadingbody": "Loading purchase lines. Please wait.",
+          "messages": {
+            "delete": {
+              "title": "Delete Purchase Item",
+              "confirm": "Are you sure you want to delete this purchase item?",
+              "delete": "Delete",
+              "cancel": "Cancel"
+            },
+            "save": {
+              "success": "Purchase item saved successfully"
+            },
+            "update": {
+              "success": "Purchase item updated successfully"
+            },
+            "deleteSuccess": "Purchase item deleted successfully",
+            "productDescriptionEmptyMessage": "No product descriptions to display",
+            "productEmptyMessage": "No products to display"
+          }
+        },
+        "list": {
+          "title": "Purchases",
+          "id": "Order No",
+          "issueDate": "Issue Date",
+          "dueDate": "Due Date",
+          "supplier": "Supplier",
+          "invoice": "Invoice",
+          "discountAmount": "Discount",
+          "vatAmount": "VAT",
+          "grossAmount": "Total",
+          "taxableAmount": "Taxable Amount",
+          "loadingbody": "Loading purchases. Please wait.",
+          "emptymessage": "No purchases to display"
+        },
+        "details": {
+          "amount": "Amount",
+          "title": "Purchase Details",
+          "confirm": "Confirm Action",
+          "supplier": "Supplier",
+          "invoice": "Invoice",
+          "issueDate": "Issue Date",
+          "dueDate": "Due Date",
+          "discountAmount": "Discount",
+          "vatAmount": "VAT",
+          "grossAmount": "Total",
+          "taxableAmount": "Taxable Amount",
+          "enabled": "Enabled",
+          "saveMessage": {
+            "summary": "Purchase saved successfully",
+            "detail": "The purchase was saved successfully"
+          },
+          "errors": {
+            "quantity": {
+              "required": "Quantity is required"
+            },
+            "unitPrice": {
+              "required": "Unit price is required"
+            },
+            "product": {
+              "required": "Product is required"
+            },
+            "supplier": {
+              "required": "Supplier is required"
+            },
+            "invoice": {
+              "required": "Invoice is required",
+              "length": "Maximum length is 50",
+              "pattern": "Only alphabetic characters, numbers, and spaces are allowed"
+            },
+            "issueDate": {
+              "required": "Issue date is required"
+            },
+            "dueDate": {
+              "required": "Due date is required"
+            },
+            "discountAmount": {
+              "required": "Discount is required",
+              "length": "Maximum length is 50",
+              "pattern": "Only numeric characters are allowed"
+            },
+            "vatAmount": {
+              "required": "VAT is required",
+              "length": "Maximum length is 50",
+              "pattern": "Only numeric characters are allowed"
+            },
+            "grossAmount": {
+              "required": "Total is required",
+              "length": "Maximum length is 50",
+              "pattern": "Only numeric characters are allowed"
+            },
+            "taxableAmount": {
+              "required": "Taxable amount is required",
+              "length": "Maximum length is 50",
+              "pattern": "Only numeric characters are allowed"
+            },
+            "description": {
+              "required": "Description is required"
+            },
+            "purchaseLineGrossAmount": {
+              "required": "Total value is required"
+            },
+            "purchaseLineTaxableAmount": {
+              "required": "Tax % is required"
+            },
+            "taxScheme": {
+              "required": "Tax is required"
+            },
+            "taxCategory": {
+              "required": "Tax % is required"
+            },
+            "taxAmount": {
+              "required": "Tax amount is required"
+            }
+          }
+        }
+      }
+    }
+  }
+}
