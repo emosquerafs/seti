@@ -34,6 +34,8 @@ public class ProductController {
     private final GetProductByIdUseCase getProductByIdUseCase;
     private final GetProductsByBranchUseCase getProductsByBranchUseCase;
     private final GetProductWithMaxStockByBranchUseCase getProductWithMaxStockByBranchUseCase;
+    private final GetMaxStockProductPerBranchForFranchiseUseCase getMaxStockProductPerBranchForFranchiseUseCase;
+
 
     @Operation(
             summary = "Agregar un nuevo producto a una sucursal",
@@ -162,5 +164,22 @@ public class ProductController {
     public Mono<Product> getProductWithMaxStockByBranch(@PathVariable UUID branchId) {
         log.info("API: Getting product with max stock for branch {}", branchId);
         return getProductWithMaxStockByBranchUseCase.execute(branchId);
+    }
+
+    @Operation(
+            summary = "Obtener el producto con más stock por sucursal de una franquicia",
+            description = "Devuelve el producto con mayor stock de cada sucursal para una franquicia dada.",
+            tags = {"Products"},
+            parameters = {
+                    @Parameter(name = "franchiseId", description = "ID de la franquicia", example = "d3813e13-49ef-41e5-beb2-70f7cc3338e2")
+            },
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Listado de productos con más stock por sucursal")
+            }
+    )
+    @GetMapping("/franchises/{franchiseId}/branches/products/max-stock")
+    public Flux<Product> getMaxStockProductPerBranchForFranchise(@PathVariable UUID franchiseId) {
+        log.info("API: Getting max-stock product per branch for franchise {}", franchiseId);
+        return getMaxStockProductPerBranchForFranchiseUseCase.execute(franchiseId);
     }
 }

@@ -20,8 +20,8 @@ public class GetProductWithMaxStockByBranchUseCase {
     public Mono<Product> execute(UUID branchId) {
         log.info("Finding product with max stock for branch {}", branchId);
         return productRepository.findByBranchId(branchId)
-                .sort((a, b) -> Integer.compare(b.getStock(), a.getStock())) // Descendente
-                .next() // Solo el primero (mayor stock)
+                .sort((a, b) -> Integer.compare(b.getStock(), a.getStock()))
+                .next()
                 .doOnNext(product -> log.info("Product with max stock: {}", product))
                 .doOnError(e -> log.error("Error finding product with max stock for branch {}: {}", branchId, e.getMessage()));
     }
