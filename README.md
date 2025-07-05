@@ -1184,52 +1184,60 @@ ENTRYPOINT ["sh", "-c", "java $JAVA_OPTS -jar franchise-service.jar"]
 ```yaml
 # application-dev.yaml
 spring:
-  datasource:
-    url: jdbc:postgresql://localhost:5433/franchise-db
+  config:
+    import: vault://kv/applications/dev/${spring.application.name}
   cloud:
     vault:
-      uri: http://localhost:8200
+      token: ${VAULT_TOKEN}
+      authentication: TOKEN
+      scheme: http
+      host: vault
+      port: 8200
+      config:
+        lifecycle:
+          enabled: true
+server:
+  port: 8081
 
-logging:
-  level:
-    com.seti: DEBUG
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+  api-docs:
+    path: /v3/api-docs
+
+
+
 ```
 
-#### UAT
+#### local
 ```yaml
-# application-uat.yaml
+# application-local.yaml
 spring:
-  datasource:
-    url: jdbc:postgresql://postgres-uat:5432/franchise-db
+  config:
+    import: vault://kv/applications/local/${spring.application.name}
   cloud:
     vault:
-      uri: http://vault-uat:8200
+      token: ${VAULT_TOKEN}
+      authentication: TOKEN
+      scheme: http
+      host: vault
+      port: 8200
+      config:
+        lifecycle:
+          enabled: true
+server:
+  port: 8081
 
-logging:
-  level:
-    com.seti: INFO
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+  api-docs:
+    path: /v3/api-docs
+
+
+
 ```
 
-#### Production
-```yaml
-# application-prod.yaml
-spring:
-  datasource:
-    url: ${DATABASE_URL}
-  cloud:
-    vault:
-      uri: ${VAULT_URL}
-
-logging:
-  level:
-    com.seti: WARN
-    
-management:
-  endpoints:
-    web:
-      exposure:
-        include: health,metrics
-```
 
 ## �📚 Referencias y Recursos
 
