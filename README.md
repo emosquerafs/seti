@@ -663,8 +663,8 @@ curl --location 'http://localhost:8080/realms/SETI/protocol/openid-connect/token
 
 Desde la documentacion swagger utilice el token para autorizar la peticion.
 
-
 ![alt text](<Screenshot 2025-07-05 at 3.29.11 PM.png>)
+
 
 ##### 🔒 Configuración de Keycloak
 
