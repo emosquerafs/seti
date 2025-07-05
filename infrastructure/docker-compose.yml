@@ -14,6 +14,9 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
+    networks:
+      - seti-network
+
   postgres-franchise:
     image: postgres:16
     container_name: postgres-franchise
@@ -29,7 +32,10 @@ services:
       test: ["CMD", "pg_isready", "-U", "franchise", "-d", "franchise-db"]
       interval: 5s
       timeout: 5s
-      retries: 5  
+      retries: 5
+    networks:
+      - seti-network
+
   keycloak:
     image: quay.io/keycloak/keycloak:25.0.6
     container_name: keycloak
@@ -46,6 +52,8 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
+    networks:
+      - seti-network
 
   vault:
     image: hashicorp/vault:1.13
@@ -60,6 +68,22 @@ services:
       - "8200:8200"
     volumes:
       - vault-data:/vault/data
+    networks:
+      - seti-network
+
+  backend:
+    build:
+      context: ../franchise-service
+      dockerfile: Dockerfile
+    container_name: franchise-service
+    depends_on:
+      - postgres-franchise
+      - vault
+      - keycloak
+    ports:
+      - "8081:8081"
+    networks:
+      - seti-network
 
   vault-init:
     image: alpine:3.19
@@ -70,6 +94,9 @@ services:
     command: -c "apk add --no-cache curl jq && /vault/vault-secrets.sh"
     volumes:
       - ./vault-secrets.sh:/vault/vault-secrets.sh
+    networks:
+      - seti-network
+
   keycloak-init:
     build:
       context: .
@@ -83,7 +110,12 @@ services:
       - KEYCLOAK_USER=admin
       - KEYCLOAK_PASSWORD=admin123
       - KEYCLOAK_HOST=http://keycloak:8080
+    networks:
+      - seti-network
 
 volumes:
   vault-data:
-  mongodb-data:
+
+networks:
+  seti-network:
+    driver: bridge
