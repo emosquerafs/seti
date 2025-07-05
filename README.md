@@ -16,7 +16,6 @@ SETI Franchise Service es un sistema completo de gestión de franquicias que per
 
 - **🔄 100% Reactivo**: Implementado con Spring Boot WebFlux y R2DBC para máximo rendimiento
 - **🏗️ Arquitectura Hexagonal**: Basada en Clean Architecture siguiendo las mejores prácticas de Bancolombia
-- **🔐 Seguridad Avanzada**: Integración con Keycloak para autenticación y autorización OIDC
 - **🔒 Gestión de Secretos**: HashiCorp Vault para manejo seguro de credenciales y configuraciones
 - **📊 Documentación Viva**: API autodocumentada con Swagger/OpenAPI
 - **🐳 Containerización**: Orquestación completa con Docker Compose
@@ -169,14 +168,10 @@ graph LR
     subgraph "🗄️ Data & Storage"
         PG[🐘 PostgreSQL 16]
         R2[⚡ R2DBC Driver]
-        FLYWAY[🗂️ Flyway Migrations]
     end
     
-    subgraph "🔐 Security & Secrets"
-        KC[🔑 Keycloak 25.0.6]
+    subgraph "🔐 Security & Secrets"        
         VAULT[🔒 HashiCorp Vault 1.13]
-        OIDC[🛡️ OIDC/OAuth2]
-        JWT[🎫 JWT Tokens]
     end
     
     subgraph "🐳 Containerization"
@@ -233,25 +228,20 @@ graph TB
         KC_INIT[⚙️ Keycloak Init]
     end
     
-    WEB --> LB
-    MOBILE --> LB
-    API_CLIENT --> LB
+    WEB --> BACKEND
+    MOBILE --> BACKEND
+    API_CLIENT --> BACKEND   
     
-    LB --> BACKEND
-    LB --> FRONTEND
     
-    BACKEND --> KEYCLOAK
     BACKEND --> VAULT
     BACKEND --> PG_APP
     
     KEYCLOAK --> PG_KC
     VAULT --> VAULT_DATA
     
-    VAULT_INIT -.-> VAULT
-    KC_INIT -.-> KEYCLOAK
+    VAULT_INIT -.-> VAULT    
     
-    style BACKEND fill:#e1f5fe
-    style KEYCLOAK fill:#fff3e0
+    style BACKEND fill:#e1f5fe    
     style VAULT fill:#f3e5f5
     style PG_KC fill:#e8f5e8
     style PG_APP fill:#e8f5e8
