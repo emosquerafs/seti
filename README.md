@@ -620,29 +620,6 @@ open http://localhost:8081/api/swagger-ui.html
 
 #### Variables de Entorno
 
-```bash
-# Crear archivo .env en la raíz del proyecto
-cat << EOF > .env
-# Base de datos
-DATABASE_URL=jdbc:postgresql://localhost:5433/franchise-db
-DATABASE_USERNAME=franchise
-DATABASE_PASSWORD=franchise123
-
-# Vault
-VAULT_URL=http://localhost:8200
-VAULT_TOKEN=root
-
-# Keycloak
-KEYCLOAK_URL=http://localhost:8080
-KEYCLOAK_REALM=seti-realm
-KEYCLOAK_CLIENT_ID=franchise-client
-
-# Aplicación
-SERVER_PORT=8081
-SPRING_PROFILES_ACTIVE=local
-EOF
-```
-
 #### Configuración de IDE
 
 ##### IntelliJ IDEA
@@ -877,30 +854,30 @@ Accept: application/json
 
 ```mermaid
 graph TD
-    subgraph "🏢 Franchise Endpoints"
-        F1[GET /api/franchises]
-        F2[POST /api/franchises]
-        F3[GET /api/franchises/{id}]
-        F4[PUT /api/franchises/{id}]
-        F5[DELETE /api/franchises/{id}]
+    subgraph FranchiseEndpoints["🏢 Franchise Endpoints"]
+        F1["GET /api/franchises"]
+        F2["POST /api/franchises"]
+        F3["GET /api/franchises/{id}"]
+        F4["PUT /api/franchises/{id}"]
+        F5["DELETE /api/franchises/{id}"]
     end
     
-    subgraph "🏪 Branch Endpoints"
-        B1[POST /api/branches/franchises/{franchiseId}/branches]
-        B2[GET /api/branches/franchises/{franchiseId}/branches]
-        B3[GET /api/branches/branches/{branchId}]
-        B4[PUT /api/branches/branches/{branchId}]
-        B5[DELETE /api/branches/branches/{branchId}]
+    subgraph BranchEndpoints["🏪 Branch Endpoints"]
+        B1["POST /api/branches/franchises/{franchiseId}/branches"]
+        B2["GET /api/branches/franchises/{franchiseId}/branches"]
+        B3["GET /api/branches/branches/{branchId}"]
+        B4["PUT /api/branches/branches/{branchId}"]
+        B5["DELETE /api/branches/branches/{branchId}"]
     end
     
-    subgraph "📦 Product Endpoints"
-        P1[POST /api/branches/{branchId}/products]
-        P2[GET /api/branches/{branchId}/products]
-        P3[GET /api/products/{productId}]
-        P4[PUT /api/products/{productId}]
-        P5[DELETE /api/products/{productId}]
-        P6[GET /api/branches/{branchId}/products/max-stock]
-        P7[GET /api/franchises/{franchiseId}/branches/products/max-stock]
+    subgraph ProductEndpoints["📦 Product Endpoints"]
+        P1["POST /api/branches/{branchId}/products"]
+        P2["GET /api/branches/{branchId}/products"]
+        P3["GET /api/products/{productId}"]
+        P4["PUT /api/products/{productId}"]
+        P5["DELETE /api/products/{productId}"]
+        P6["GET /api/branches/{branchId}/products/max-stock"]
+        P7["GET /api/franchises/{franchiseId}/branches/products/max-stock"]
     end
     
     F1 --> B2
