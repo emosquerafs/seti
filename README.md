@@ -567,14 +567,9 @@ graph TD
 # Navegar a la carpeta de infraestructura
 cd infrastructure
 
-# Levantar todos los servicios
-docker-compose up -d
+./run.sh dev # Ejecucion en el ambiente de conetenedores
+./run.sh local # para ejecucion del backend desde intellij
 
-# Verificar el estado de los servicios
-docker-compose ps
-
-# Ver logs en tiempo real
-docker-compose logs -f
 ```
 
 #### 4️⃣ Verificar Servicios
