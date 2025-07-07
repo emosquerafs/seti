@@ -30,7 +30,7 @@ curl --silent --header "X-Vault-Token: $VAULT_TOKEN" \
   "data": {
     "jwt.auth.converter.principalAttribute": "preferred_username",
     "jwt.auth.converter.resourceId": "SETI",    
-    "spring.security.oauth2.resourceserver.jwt.issuer-uri": "http://localhost:8080/realms/SETI",
+    "spring.security.oauth2.resourceserver.jwt.issuer-uri": "http://keycloak:8080/realms/SETI",
     "spring.r2dbc.url": "r2dbc:postgresql://postgres-franchise:5432/franchise-db",
     "spring.r2dbc.username": "franchise",
     "spring.r2dbc.password": "franchise123",

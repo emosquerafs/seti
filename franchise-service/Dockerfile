@@ -20,7 +20,7 @@ FROM debian:stable-slim
 ENV TZ=America/Bogota
 ENV VAULT_TOKEN=root
 
-RUN apt-get update && apt-get install -y libc6
+RUN apt-get update && apt-get install -y libc6 curl
 
 RUN groupadd -r seti && useradd -r -g seti -m -d /etc/seti  seti
 RUN set -ex; \

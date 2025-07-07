@@ -1,6 +1,6 @@
 spring:
   config:
-    import: vault://kv/applications/local/${spring.application.name}
+    import: vault://kv/applications/dev/${spring.application.name}
   cloud:
     vault:
       token: ${VAULT_TOKEN}
