@@ -634,6 +634,8 @@ El sistema utiliza Keycloak para la autenticación y autorización. Para probar 
 
 ##### 🎫 Obtener Token de Acceso
 
+La validacion del token no se alcacnzo a terminar , por ahora las peticiones pueden realizarce sin token 
+
 ```bash
 # Obtener token de autenticación desde Keycloak
 curl --location 'http://localhost:8080/realms/SETI/protocol/openid-connect/token' \
