@@ -1,3 +1,149 @@
-<p>
-  category-crud works!
-</p>
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Gestionar Categorías</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="dismiss()">
+        <ion-icon name="close"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <!-- Formulario para crear/editar categoría -->
+  <ion-card>
+    <ion-card-header>
+      <ion-card-title>{{ editingCategory ? 'Editar' : 'Nueva' }} Categoría</ion-card-title>
+    </ion-card-header>
+    
+    <ion-card-content>
+      <form [formGroup]="categoryForm" (ngSubmit)="onSubmit()">
+        
+        <ion-item>
+          <ion-label position="stacked">Nombre *</ion-label>
+          <ion-input 
+            formControlName="name"
+            placeholder="Nombre de la categoría"
+            [class.invalid]="categoryForm.get('name')?.invalid && categoryForm.get('name')?.touched">
+          </ion-input>
+        </ion-item>
+        <div *ngIf="categoryForm.get('name')?.invalid && categoryForm.get('name')?.touched" class="error-message">
+          El nombre es requerido (mínimo 2 caracteres)
+        </div>
+
+        <!-- Selector de color -->
+        <div class="color-section">
+          <ion-label class="section-label">Color</ion-label>
+          <div class="color-grid">
+            <div 
+              *ngFor="let color of predefinedColors"
+              class="color-option"
+              [class.selected]="categoryForm.get('color')?.value === color"
+              [style.background-color]="color"
+              (click)="selectColor(color)">
+              <ion-icon 
+                name="checkmark" 
+                *ngIf="categoryForm.get('color')?.value === color">
+              </ion-icon>
+            </div>
+          </div>
+        </div>
+
+        <!-- Selector de icono -->
+        <div class="icon-section">
+          <ion-label class="section-label">Icono</ion-label>
+          <div class="icon-grid">
+            <div 
+              *ngFor="let icon of predefinedIcons"
+              class="icon-option"
+              [class.selected]="categoryForm.get('icon')?.value === icon"
+              (click)="selectIcon(icon)">
+              <ion-icon [name]="icon"></ion-icon>
+            </div>
+          </div>
+        </div>
+
+        <!-- Vista previa -->
+        <div class="preview-section">
+          <ion-label class="section-label">Vista previa</ion-label>
+          <ion-chip 
+            [style.--background]="categoryForm.get('color')?.value"
+            [style.--color]="'white'">
+            <ion-icon [name]="categoryForm.get('icon')?.value"></ion-icon>
+            {{ categoryForm.get('name')?.value || 'Nombre de categoría' }}
+          </ion-chip>
+        </div>
+
+        <div class="form-actions">
+          <ion-button 
+            expand="block" 
+            type="submit" 
+            [disabled]="categoryForm.invalid"
+            color="primary">
+            <ion-icon [name]="editingCategory ? 'save' : 'add'" slot="start"></ion-icon>
+            {{ editingCategory ? 'Actualizar' : 'Crear' }}
+          </ion-button>
+          
+          <ion-button 
+            expand="block" 
+            fill="outline" 
+            color="medium" 
+            (click)="resetForm()"
+            *ngIf="editingCategory">
+            Cancelar edición
+          </ion-button>
+        </div>
+      </form>
+    </ion-card-content>
+  </ion-card>
+
+  <!-- Lista de categorías existentes -->
+  <ion-card>
+    <ion-card-header>
+      <ion-card-title>Categorías Existentes</ion-card-title>
+    </ion-card-header>
+    
+    <ion-card-content>
+      <ion-list *ngIf="categories.length > 0; else noCategories">
+        <ion-item *ngFor="let category of categories">
+          <ion-chip 
+            slot="start"
+            [style.--background]="category.color"
+            [style.--color]="'white'">
+            <ion-icon [name]="category.icon || 'pricetag'"></ion-icon>
+            {{ category.name }}
+          </ion-chip>
+          
+          <ion-label>
+            <p class="category-date">
+              Creada: {{ category.createdAt | date:'short':'es' }}
+            </p>
+          </ion-label>
+          
+          <ion-button 
+            fill="clear" 
+            color="primary" 
+            slot="end" 
+            (click)="editCategory(category)">
+            <ion-icon name="create-outline"></ion-icon>
+          </ion-button>
+          
+          <ion-button 
+            fill="clear" 
+            color="danger" 
+            slot="end" 
+            (click)="deleteCategory(category)">
+            <ion-icon name="trash-outline"></ion-icon>
+          </ion-button>
+        </ion-item>
+      </ion-list>
+      
+      <ng-template #noCategories>
+        <div class="empty-state">
+          <ion-icon name="pricetags-outline" size="large"></ion-icon>
+          <p>No hay categorías creadas</p>
+        </div>
+      </ng-template>
+    </ion-card-content>
+  </ion-card>
+</ion-content>

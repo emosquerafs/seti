@@ -1,55 +1,168 @@
-<ion-header>
+<ion-header [translucent]="true">
   <ion-toolbar>
-    <ion-title>To-Do List</ion-title>
+    <ion-title>
+      <div class="header-content">
+        <span>Mi Lista de Tareas</span>
+        <ion-badge *ngIf="getTaskCounts().pending > 0" color="primary">
+          {{ getTaskCounts().pending }}
+        </ion-badge>
+      </div>
+    </ion-title>
+    
     <ion-buttons slot="end">
       <ion-button (click)="openCategoryCrud()">
         <ion-icon name="pricetags-outline"></ion-icon>
       </ion-button>
+      <ion-button (click)="presentSortOptions()">
+        <ion-icon name="funnel-outline"></ion-icon>
+      </ion-button>
     </ion-buttons>
+  </ion-toolbar>
+  
+  <!-- Search and Filter Bar -->
+  <ion-toolbar>
+    <ion-searchbar 
+      [(ngModel)]="searchQuery"
+      (ionInput)="onSearchChange()"
+      placeholder="Buscar tareas..."
+      show-clear-button="focus">
+    </ion-searchbar>
   </ion-toolbar>
 </ion-header>
 
-<ion-content *ngIf="!loading; else loadingTpl">
-  <ion-card>
+<ion-content [fullscreen]="true" *ngIf="!loading; else loadingTpl">
+  
+  <!-- Quick Stats -->
+  <div class="stats-container">
+    <ion-card class="stats-card">
+      <div class="stat-item" [class.active]="currentFilter === 'all'" (click)="setFilter('all')">
+        <span class="stat-number">{{ getTaskCounts().total }}</span>
+        <span class="stat-label">Total</span>
+      </div>
+      <div class="stat-item" [class.active]="currentFilter === 'pending'" (click)="setFilter('pending')">
+        <span class="stat-number">{{ getTaskCounts().pending }}</span>
+        <span class="stat-label">Pendientes</span>
+      </div>
+      <div class="stat-item" [class.active]="currentFilter === 'completed'" (click)="setFilter('completed')">
+        <span class="stat-number">{{ getTaskCounts().completed }}</span>
+        <span class="stat-label">Completadas</span>
+      </div>
+      <div class="stat-item overdue" [class.active]="currentFilter === 'overdue'" (click)="setFilter('overdue')" *ngIf="getTaskCounts().overdue > 0">
+        <span class="stat-number">{{ getTaskCounts().overdue }}</span>
+        <span class="stat-label">Vencidas</span>
+      </div>
+    </ion-card>
+  </div>
+
+  <!-- Filters Row -->
+  <div class="filters-container">
+    <!-- Category Filter -->
     <ion-item>
-      <ion-label>Categoría</ion-label>
-      <ion-select [(ngModel)]="selectedCategoryId" (ionChange)="reloadData()">
-        <ion-select-option [value]="null">Todas</ion-select-option>
-        <ion-select-option *ngFor="let c of categories" [value]="c.id">{{ c.name }}</ion-select-option>
+      <ion-icon name="pricetag-outline" slot="start"></ion-icon>
+      <ion-select 
+        [(ngModel)]="selectedCategoryId" 
+        (ionChange)="onCategoryChange()"
+        placeholder="Todas las categorías"
+        interface="popover">
+        <ion-select-option [value]="null">Todas las categorías</ion-select-option>
+        <ion-select-option 
+          *ngFor="let category of categories" 
+          [value]="category.id">
+          <span [style.color]="category.color">●</span> {{ category.name }}
+        </ion-select-option>
       </ion-select>
     </ion-item>
-  </ion-card>
 
-  <ion-list>
-    <ion-item *ngFor="let task of filteredTasks()">
-      <ion-checkbox slot="start" [checked]="task.completed" (ionChange)="toggleComplete(task)"></ion-checkbox>
-      <ion-label>
-        <h2 [class.completed]="task.completed">{{ task.title }}</h2>
-        <p *ngIf="task.categoryId">
-          <ion-chip color="primary" *ngIf="getCategoryName(task.categoryId)">
-            {{ getCategoryName(task.categoryId) }}
-          </ion-chip>
-
-        </p>
-      </ion-label>
-      <ion-button fill="clear" color="danger" slot="end" (click)="removeTask(task.id)">
-        <ion-icon name="trash"></ion-icon>
+    <!-- Filter and Sort buttons -->
+    <div class="action-buttons">
+      <ion-button 
+        fill="outline" 
+        size="small" 
+        (click)="presentFilterOptions()">
+        <ion-icon name="filter-outline" slot="start"></ion-icon>
+        {{ getFilterLabel() }}
       </ion-button>
-    </ion-item>
-  </ion-list>
+      
+      <ion-button 
+        fill="outline" 
+        size="small" 
+        (click)="presentSortOptions()">
+        <ion-icon name="swap-vertical-outline" slot="start"></ion-icon>
+        {{ getSortLabel() }}
+      </ion-button>
+    </div>
+  </div>
 
-  <ion-item>
-    <ion-input placeholder="Nueva tarea" [(ngModel)]="newTaskTitle"></ion-input>
-    <ion-button (click)="addTask()" [disabled]="!newTaskTitle.trim()">Agregar</ion-button>
-  </ion-item>
+  <!-- Tasks List -->
+  <div class="tasks-container">
+    <!-- Category Statistics -->
+    <app-category-stats 
+      [tasks]="tasks" 
+      [categories]="categories"
+      *ngIf="showStats || (tasks.length > 0 && currentFilter === 'all' && !searchQuery && !selectedCategoryId && tasks.length <= 5)">
+    </app-category-stats>
 
+    <ion-list *ngIf="filteredTasks.length > 0; else emptyState">
+      <app-task-item
+        *ngFor="let task of filteredTasks; trackBy: trackByTaskId"
+        [task]="task"
+        [category]="getCategoryById(task.categoryId || '')"
+        (toggleComplete)="onToggleComplete($event)"
+        (edit)="openTaskForm($event)"
+        (delete)="onDeleteTask($event)">
+      </app-task-item>
+    </ion-list>
+
+    <ng-template #emptyState>
+      <div class="empty-state">
+        <ion-icon 
+          [name]="getEmptyStateIcon()" 
+          size="large">
+        </ion-icon>
+        <h3>{{ getEmptyStateTitle() }}</h3>
+        <p>{{ getEmptyStateMessage() }}</p>
+        <ion-button 
+          *ngIf="currentFilter === 'all' && searchQuery === '' && !selectedCategoryId"
+          fill="outline" 
+          (click)="openTaskForm()">
+          <ion-icon name="add" slot="start"></ion-icon>
+          Crear primera tarea
+        </ion-button>
+      </div>
+    </ng-template>
+  </div>
+
+  <!-- Floating Action Button -->
   <ion-fab vertical="bottom" horizontal="end" slot="fixed">
-    <ion-fab-button (click)="addTask()">
+    <ion-fab-button (click)="openTaskForm()" color="primary">
       <ion-icon name="add"></ion-icon>
     </ion-fab-button>
+    
+    <ion-fab-list side="top">
+      <ion-fab-button 
+        (click)="openCategoryCrud()" 
+        color="secondary"
+        size="small">
+        <ion-icon name="pricetags"></ion-icon>
+      </ion-fab-button>
+      
+      <ion-fab-button 
+        (click)="toggleStats()" 
+        color="tertiary"
+        size="small"
+        *ngIf="tasks.length > 0">
+        <ion-icon name="analytics"></ion-icon>
+      </ion-fab-button>
+    </ion-fab-list>
   </ion-fab>
+
 </ion-content>
 
 <ng-template #loadingTpl>
-  <ion-spinner></ion-spinner>
+  <ion-content>
+    <div class="loading-container">
+      <ion-spinner name="circular"></ion-spinner>
+      <p>Cargando tareas...</p>
+    </div>
+  </ion-content>
 </ng-template>
