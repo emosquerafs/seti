@@ -5,7 +5,8 @@ spring:
     ansi:
       enabled: always
   profiles:
-    active: dev
+    active: local
+
   config:
     location: ./src/main/resources
 

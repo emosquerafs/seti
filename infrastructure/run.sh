@@ -91,17 +91,3 @@ fi
 echo ""
 echo "🎉 Infraestructura configurada para ambiente: $ENVIRONMENT"
 echo ""
-echo "📋 Próximos pasos:"
-if [[ "$ENVIRONMENT" == "local" ]]; then
-    echo "  1. cd ../franchise-service"
-    echo "  2. export VAULT_TOKEN=root"
-    echo "  3. ./gradlew bootRun"
-elif [[ "$ENVIRONMENT" == "dev" ]]; then
-    echo "  1. cd ../franchise-service"
-    echo "  2. docker build -t franchise-service ."
-    echo "  3. docker run --network infrastructure_seti-network franchise-service"
-fi
-echo ""
-echo "🌐 URLs disponibles:"
-echo "  - Vault UI: http://localhost:8200"
-echo "  - API Docs: http://localhost:8081/api/swagger-ui.html (cuando esté corriendo)"    
