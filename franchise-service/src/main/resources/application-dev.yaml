@@ -6,11 +6,12 @@ spring:
       token: ${VAULT_TOKEN}
       authentication: TOKEN
       scheme: http
-      host: localhost
+      host: vault
       port: 8200
       config:
         lifecycle:
           enabled: true
+
 
 springdoc:
   swagger-ui:

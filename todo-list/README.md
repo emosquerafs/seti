@@ -70,9 +70,13 @@ Listado de tareas
 
 ### ¿Cuáles fueron los principales desafíos?
 
-1. **Configuración de Ionic Storage** - Error de inyección de dependencias que resolví ajustando los providers
+1. **Configuración de Ionic Storage** - No conocia , Ionic Storage, por lo que el error de inyección de dependencias me dio problemas el cual resolvi creando un provider  provideIonicStorage
 2. **Sincronización reactiva** - Mantener tareas y categorías sincronizadas en tiempo real con observables
-3. **UX responsivo** - Adaptar la interfaz para móvil y desktop, especialmente los filtros
+
+   - private tasksSubject = new BehaviorSubject<TodoTask[]>([]);
+   - private categoriesSubject = new BehaviorSubject<Category[]>([]);
+
+3. **UX responsivo** - Adaptar la interfaz para móvil y desktop, especialmente los filtros, Aun falt  a que el la vista de movil no muestra el boton de agregar tarea y/o categoria 
 
 ### ¿Qué optimizaciones aplicaste?
 

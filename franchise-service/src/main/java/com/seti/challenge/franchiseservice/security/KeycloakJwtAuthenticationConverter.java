@@ -38,7 +38,7 @@ public class KeycloakJwtAuthenticationConverter implements Converter<Jwt, Abstra
             }
 
             var resourceAccessMap = new HashMap<>(resourceAccess);
-            var PentaFolk = (Map<String, List<String>>) resourceAccessMap.get("PentaFolk");
+            var PentaFolk = (Map<String, List<String>>) resourceAccessMap.get("SETI");
             if (PentaFolk == null) {
                 return List.of(); // Retorna una lista vacía si no hay cuenta
             }
