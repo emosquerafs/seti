@@ -1,0 +1,168 @@
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version '3.5.3'
+    id 'io.spring.dependency-management' version '1.1.7'
+    id("org.sonarqube") version "6.2.0.5505"
+    id 'jacoco'
+}
+
+group = 'co.singularit'
+version = '0.0.1'
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
+}
+
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+
+    implementation ('org.springframework.boot:spring-boot-starter-web'){
+        exclude group: 'org.springframework.boot', module: 'spring-boot-starter-logging'
+    }
+
+    testImplementation("org.mockito:mockito-core:5.17.0")
+    testImplementation 'junit:junit:4.13.1'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
+    implementation("org.jetbrains:annotations:26.0.2")
+
+
+    implementation("org.springframework.cloud:spring-cloud-starter-vault-config:4.3.0")
+    implementation("com.zaxxer:HikariCP")
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'com.fasterxml.jackson.datatype:jackson-datatype-hibernate6'
+
+
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+    implementation("org.springframework.security:spring-security-core")
+
+
+    implementation 'io.jsonwebtoken:jjwt-api:0.12.6'
+    implementation 'io.jsonwebtoken:jjwt-impl:0.12.6'
+    implementation 'io.jsonwebtoken:jjwt-jackson:0.12.6'
+
+
+    implementation("org.springframework.boot:spring-boot-starter-tomcat:3.5.3")
+    implementation("org.springframework.boot:spring-boot-starter-oauth2-resource-server:3.5.3")
+
+
+    compileOnly 'org.projectlombok:lombok'
+    developmentOnly 'org.springframework.boot:spring-boot-devtools'
+    runtimeOnly 'org.postgresql:postgresql'
+    annotationProcessor 'org.projectlombok:lombok'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.springframework.security:spring-security-test'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+}
+
+
+jacoco {
+    toolVersion = "0.8.13"
+    reportsDirectory = layout.buildDirectory.dir('customJacocoReportDir')
+}
+
+
+tasks.named('sonarqube') {
+    dependsOn 'test'
+    dependsOn 'jacocoTestReport'
+}
+sonar {
+    properties {
+        property("sonar.projectKey", "backend-flowcheck-core")
+        property("sonar.projectName", "backend-flowcheck-core")
+        property("sonar.host.url", "http://172.100.0.251:9000")
+        property("sonar.sources", "src/main")
+        property("sonar.tests", "src/test")
+        property("sonar.scm.provider", "git")
+        property("sonar.exclusions", "**/configuration/**")
+        property("sonar.java.coveragePlugin", "jacoco")
+        property("sonar.coverage.jacoco.xmlReportPaths", "${layout.buildDirectory.get()}/customJacocoReportDir/test/jacocoTestReport.xml")
+    }
+}
+
+tasks.register("getVersion") {
+    group = 'application'
+    description = 'Displays the project version from build.gradle and application.yaml'
+
+    doFirst {
+        def yamlFile = file('src/main/resources/application.yaml')
+        if (yamlFile.exists()) {
+            def yamlContent = yamlFile.text
+            def versionMatch = yamlContent =~ /project:\s*\n\s*version:\s*([^\n]+)/
+            if (versionMatch.find()) {
+                println "SingularItVersion ${versionMatch[0][1]}"
+            } else {
+                println "Project version not found in application.yaml"
+            }
+        }
+    }
+}
+
+
+jacocoTestReport {
+    dependsOn test
+    reports {
+        xml.required = true
+        xml.outputLocation = layout.buildDirectory.file('customJacocoReportDir/test/jacocoTestReport.xml')
+        html.required = true
+        html.outputLocation = layout.buildDirectory.dir('jacocoHtml')
+    }
+
+    // Exclude JacksonConfig from coverage reports
+    afterEvaluate {
+        classDirectories.setFrom(files(classDirectories.files.collect {
+            fileTree(dir: it, exclude: [
+                    'co/singularit/configuration'
+            ])
+        }))
+    }
+}
+
+test {
+    useJUnitPlatform()
+    finalizedBy(tasks.jacocoTestReport)
+}
+
+
+jacocoTestCoverageVerification {
+    violationRules {
+        rule {
+            limit {
+                minimum = 0.8 // 80% coverage required
+            }
+        }
+
+        rule {
+            enabled = false
+            element = 'CLASS'
+            includes = ['org.gradle.*']
+
+            limit {
+                counter = 'LINE'
+                value = 'TOTAL COUNT'
+                maximum = 0.3
+            }
+        }
+
+        // Exclude JacksonConfig class from verification
+        rule {
+            element = 'CLASS'
+            excludes = ['co.singularit.configuration.JacksonConfig']
+        }
+    }
+}

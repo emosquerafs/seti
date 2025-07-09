@@ -1,0 +1,33 @@
+spring:
+  config:
+    import: vault://kv/applications/local/${spring.application.name}
+  cloud:
+    vault:
+      token: ${VAULT_TOKEN}
+      authentication: TOKEN
+      scheme: http
+      host: 172.100.0.251
+      port: 8200
+      config:
+        lifecycle:
+          enabled:  true
+  jpa:
+    open-in-view: true
+    properties:
+      hibernate:
+        show_sql: true
+        hbm2ddl:
+          auto: none
+        format_sql: true
+        properties:
+          hibernate:
+            dialect: org.hibernate.dialect.PostgreSQLDialect
+            format_sql: true
+          database: postgresql
+          database-platform: org.hibernate.dialect.PostgreSQLDialect
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+    yaml:
+      enabled: true
+    enabled: true
